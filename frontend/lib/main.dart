@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async'; // For Timer
-
-// Import the Bluetooth Low Energy (BLE) package with an alias
-// You need to add 'flutter_blue_plus: ^1.27.0' (or the latest version) to your pubspec.yaml
-import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp; // Alias ohne 'show' hinzugefügt
+import 'dart:typed_data'; // For Uint8List
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp; // Alias für flutter_blue_plus
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' show Guid; // Expliziter Import für Guid
 
 void main() {
   runApp(const MyApp());
@@ -71,32 +70,32 @@ class OnboardingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.lightGreen[50], // Sehr leichter Grünton für den Hintergrund
-      body: SafeArea( // Stellt sicher, dass der Inhalt nicht von System-UI-Elementen verdeckt wird
+      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // Zentriert den Inhalt vertikal
-            crossAxisAlignment: CrossAxisAlignment.center, // Zentriert den Inhalt horizontal
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               // Ein Bild, das die App repräsentiert, mit spielerischem Rahmen
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.lightGreen[200], // Hintergrundfarbe für den spielerischen Rahmen
-                  borderRadius: BorderRadius.circular(25.0), // Stark abgerundete Ecken
+                  color: Colors.lightGreen[200],
+                  borderRadius: BorderRadius.circular(25.0),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.lightGreen.withOpacity(0.3),
                       spreadRadius: 5,
                       blurRadius: 10,
-                      offset: const Offset(0, 5), // Schatten für Tiefe
+                      offset: const Offset(0, 5),
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.all(10), // Innenabstand für den Rahmen
+                padding: const EdgeInsets.all(10),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15.0), // Abgerundete Ecken für das Bild
+                  borderRadius: BorderRadius.circular(15.0),
                   child: Image.network(
-                    'https://placehold.co/600x400/9CCC65/ffffff?text=Squirrel+Feeder+App', // Angepasstes Platzhalterbild in Grün
+                    'https://placehold.co/600x400/9CCC65/ffffff?text=Squirrel+Feeder+App',
                     fit: BoxFit.cover,
                     height: 250,
                     width: double.infinity,
@@ -114,25 +113,25 @@ class OnboardingScreen extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) => Container(
                       height: 250,
                       width: double.infinity,
-                      color: Colors.lightGreen[100], // Angepasste Fehlerbild-Farbe
+                      color: Colors.lightGreen[100],
                       child: const Icon(Icons.image_not_supported, size: 100, color: Colors.lightGreen),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 40), // Vertikaler Abstand
+              const SizedBox(height: 40),
 
               // Titel des Onboarding-Bildschirms
               Text(
                 'Willkommen bei SquirrelWatch!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 34, // Etwas größer
+                  fontSize: 34,
                   fontWeight: FontWeight.bold,
                   color: Colors.lightGreen[900],
                 ),
               ),
-              const SizedBox(height: 20), // Vertikaler Abstand
+              const SizedBox(height: 20),
 
               // Beschreibung der App
               Text(
@@ -140,10 +139,10 @@ class OnboardingScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
-                  color: Colors.green[700], // Passende grüne Textfarbe
+                  color: Colors.green[700],
                 ),
               ),
-              const SizedBox(height: 30), // Vertikaler Abstand
+              const SizedBox(height: 30),
 
               // Anweisungen zur Verbindung (Bullet Points)
               Align(
@@ -159,12 +158,11 @@ class OnboardingScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 40), // Vertikaler Abstand
+              const SizedBox(height: 40),
 
               // Call-to-Action-Button
               ElevatedButton(
                 onPressed: () {
-                  // Navigate to the BluetoothScanScreen
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => BluetoothScanScreen()),
@@ -172,17 +170,17 @@ class OnboardingScreen extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.lightGreen[700], // Kräftigerer Grünton
-                  padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 18), // Größerer Button
+                  backgroundColor: Colors.lightGreen[700],
+                  padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 18),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(35), // Stärker abgerundeter Button
+                    borderRadius: BorderRadius.circular(35),
                   ),
-                  elevation: 8, // Stärkerer Schatten
+                  elevation: 8,
                 ),
                 child: const Text(
                   'Jetzt starten & Verbinden',
                   style: TextStyle(
-                    fontSize: 22, // Größerer Text
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -216,19 +214,19 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
     super.initState();
 
     // Überwachen des Bluetooth-Adapter-Zustands
-    _adapterStateSubscription = fbp.FlutterBluePlus.adapterState.listen((state) { // Alias verwendet
+    _adapterStateSubscription = fbp.FlutterBluePlus.adapterState.listen((state) {
       setState(() {
         _adapterState = state;
       });
       // Wenn der Adapter an ist, starte den Scan automatisch
-      if (state == fbp.BluetoothAdapterState.on && !_isScanning) { // Alias verwendet
+      if (state == fbp.BluetoothAdapterState.on && !_isScanning) {
         _startScan();
       }
     });
 
     // Überwachen der Scan-Ergebnisse
-    _scanResultsSubscription = fbp.FlutterBluePlus.scanResults.listen((results) { // Alias verwendet
-      for (fbp.ScanResult result in results) { // Alias verwendet
+    _scanResultsSubscription = fbp.FlutterBluePlus.scanResults.listen((results) {
+      for (fbp.ScanResult result in results) {
         // Füge nur Geräte hinzu, die einen Namen haben und noch nicht in der Liste sind
         if (result.device.platformName.isNotEmpty && !_foundDevices.any((d) => d.remoteId == result.device.remoteId)) {
           setState(() {
@@ -239,14 +237,13 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
     });
 
     // Überwachen des Scan-Status (ob ein Scan läuft)
-    fbp.FlutterBluePlus.isScanning.listen((scanning) { // Alias verwendet
+    fbp.FlutterBluePlus.isScanning.listen((scanning) {
       setState(() {
         _isScanning = scanning;
       });
     });
 
     // Starte den Scan initial
-    // Verwenden Sie addPostFrameCallback, um sicherzustellen, dass der Kontext bereit ist
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startScan();
     });
@@ -256,16 +253,15 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
   void dispose() {
     _adapterStateSubscription?.cancel();
     _scanResultsSubscription?.cancel();
-    fbp.FlutterBluePlus.stopScan(); // Alias verwendet
+    fbp.FlutterBluePlus.stopScan();
     super.dispose();
   }
 
   // Funktion zum Starten des Bluetooth-Scans
   void _startScan() async {
-    // Stellen Sie sicher, dass der Kontext gültig ist, bevor Sie ScaffoldMessenger verwenden
     if (!mounted) return;
 
-    if (_adapterState != fbp.BluetoothAdapterState.on) { // Alias verwendet
+    if (_adapterState != fbp.BluetoothAdapterState.on) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Bitte schalten Sie Bluetooth ein, um Geräte zu finden.'),
@@ -276,20 +272,17 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
     }
 
     if (_isScanning) {
-      fbp.FlutterBluePlus.stopScan(); // Alias verwendet
-      await Future.delayed(const Duration(milliseconds: 500)); // Kurze Pause, um den vorherigen Scan zu beenden
+      fbp.FlutterBluePlus.stopScan();
+      await Future.delayed(const Duration(milliseconds: 500));
     }
 
-    _foundDevices.clear(); // Liste vor neuem Scan leeren
+    _foundDevices.clear();
     try {
-      // Startet den Scan mit längerer Dauer und aggressivem Modus
-      await fbp.FlutterBluePlus.startScan( // Alias verwendet
-        timeout: const Duration(seconds: 30), // Längere Scan-Dauer
-        // androidScanMode: fbp.ScanMode.lowLatency, // Diese Zeile wurde entfernt, um den Fehler zu beheben
+      await fbp.FlutterBluePlus.startScan(
+        timeout: const Duration(seconds: 30),
       );
     } catch (e) {
       print("Fehler beim Starten des Scans: $e");
-      // Stellen Sie sicher, dass der Kontext gültig ist, bevor Sie ScaffoldMessenger verwenden
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -301,13 +294,11 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
   }
 
   // Funktion zum Verbinden mit einem ausgewählten Gerät
-  void _connectToDevice(fbp.BluetoothDevice device) async { // Alias verwendet
-    fbp.FlutterBluePlus.stopScan(); // Alias verwendet
+  void _connectToDevice(fbp.BluetoothDevice device) async {
+    fbp.FlutterBluePlus.stopScan();
     try {
-      // Verbindung zum Gerät aufbauen
       await device.connect();
       print('Verbunden mit: ${device.platformName}');
-      // Stellen Sie sicher, dass der Kontext gültig ist, bevor Sie ScaffoldMessenger verwenden
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -315,14 +306,13 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
           backgroundColor: Colors.green[600],
         ),
       );
-      // Nach erfolgreicher Verbindung zum HomeScreen navigieren
+      // Nach erfolgreicher Verbindung zum HomeScreen navigieren und das Gerät übergeben
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen(device: device)),
       );
     } catch (e) {
       print("Fehler beim Verbinden mit ${device.platformName}: $e");
-      // Stellen Sie sicher, dass der Kontext gültig ist, bevor Sie ScaffoldMessenger verwenden
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -338,17 +328,17 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bluetooth-Geräte suchen', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.lightGreen[700], // Grüne AppBar
+        backgroundColor: Colors.lightGreen[700],
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      backgroundColor: Colors.lightGreen[50], // Grüner Hintergrund
+      backgroundColor: Colors.lightGreen[50],
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             // Anzeige des Bluetooth-Adapter-Status
-            if (_adapterState != fbp.BluetoothAdapterState.on) // Alias verwendet
+            if (_adapterState != fbp.BluetoothAdapterState.on)
               Padding(
                 padding: const EdgeInsets.only(bottom: 20.0),
                 child: Text(
@@ -366,7 +356,7 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Colors.lightGreen[900], // Dunkelgrüner Text
+                color: Colors.lightGreen[900],
               ),
               textAlign: TextAlign.center,
             ),
@@ -374,18 +364,18 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
             _isScanning
                 ? const Center(
                     child: CircularProgressIndicator(
-                      color: Colors.lightGreen, // Grüner Ladeindikator
+                      color: Colors.lightGreen,
                     ),
                   )
                 : _foundDevices.isEmpty
                     ? Center(
                         child: Column(
                           children: [
-                            Icon(Icons.bluetooth_disabled, size: 80, color: Colors.lightGreen[300]), // Angepasstes Icon
+                            Icon(Icons.bluetooth_disabled, size: 80, color: Colors.lightGreen[300]),
                             const SizedBox(height: 10),
                             Text(
                               'Keine Geräte gefunden. Stellen Sie sicher, dass Ihr Futterautomat eingeschaltet ist und Bluetooth aktiviert ist.',
-                              style: TextStyle(fontSize: 18, color: Colors.green[600]), // Grüner Text
+                              style: TextStyle(fontSize: 18, color: Colors.green[600]),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -397,22 +387,22 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
                           itemBuilder: (context, index) {
                             final device = _foundDevices[index];
                             return Card(
-                              elevation: 6, // Etwas mehr Schatten für spielerischen Effekt
+                              elevation: 6,
                               margin: const EdgeInsets.symmetric(vertical: 8.0),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0), // Stärker abgerundete Ecken
-                                side: BorderSide(color: Colors.lightGreen.shade200, width: 2.0), // Kontrastreicherer Rand
+                                borderRadius: BorderRadius.circular(20.0),
+                                side: BorderSide(color: Colors.lightGreen.shade200, width: 2.0),
                               ),
                               child: ListTile(
-                                leading: Icon(Icons.devices_other, color: Colors.lightGreen[700]), // Grünes Icon
+                                leading: Icon(Icons.devices_other, color: Colors.lightGreen[700]),
                                 title: Text(
-                                  device.platformName, // Verwende den echten Gerätenamen
+                                  device.platformName,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.lightGreen[800], // Grüner Text
+                                    color: Colors.lightGreen[800],
                                   ),
                                 ),
-                                subtitle: Text('ID: ${device.remoteId}', style: TextStyle(color: Colors.green[600])), // Grüner Untertitel
+                                subtitle: Text('ID: ${device.remoteId}', style: TextStyle(color: Colors.green[600])),
                                 trailing: Icon(Icons.arrow_forward_ios, size: 18, color: Colors.green[400]),
                                 onTap: () => _connectToDevice(device),
                               ),
@@ -422,10 +412,10 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
                       ),
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: _isScanning || _adapterState != fbp.BluetoothAdapterState.on ? null : _startScan, // Button deaktivieren, wenn gescannt wird oder BT aus ist // Alias verwendet
+              onPressed: _isScanning || _adapterState != fbp.BluetoothAdapterState.on ? null : _startScan,
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: (_isScanning || _adapterState != fbp.BluetoothAdapterState.on) ? Colors.lightGreen[300] : Colors.lightGreen[700], // Angepasste Button-Farben // Alias verwendet
+                backgroundColor: (_isScanning || _adapterState != fbp.BluetoothAdapterState.on) ? Colors.lightGreen[300] : Colors.lightGreen[700],
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
@@ -447,23 +437,125 @@ class _BluetoothScanScreenState extends State<BluetoothScanScreen> {
   }
 }
 
-// Second Screen for displaying squirrel data
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+// Second Screen for displaying squirrel data and handling internal notifications
+class HomeScreen extends StatefulWidget {
+  final fbp.BluetoothDevice? device; // Make device nullable
+
+  const HomeScreen({super.key, this.device});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  // Liste zum Speichern der empfangenen Benachrichtigungen (für die interne Anzeige)
+  final List<Map<String, String>> _notifications = [];
+  StreamSubscription<List<int>>? _characteristicSubscription;
+  fbp.BluetoothCharacteristic? _targetCharacteristic;
+
+  // UUIDs von deinem ESP32-Code
+  final Guid serviceUuid = Guid("12345678-1234-1234-1234-1234567890ab");
+  final Guid characteristicUuid = Guid("abcd1234-5678-90ab-cdef-1234567890ab");
+
+
+  @override
+  void initState() {
+    super.initState();
+    // Die _notifications-Liste startet jetzt leer und wird durch eingehende Bluetooth-Nachrichten gefüllt.
+
+    if (widget.device != null) {
+      _discoverServicesAndListen(widget.device!);
+    } else {
+      // Handle the case where no device is connected, perhaps show a message or go back
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Kein Bluetooth-Gerät verbunden. Bitte verbinden Sie zuerst ein Gerät.'),
+            backgroundColor: Colors.orange[600],
+          ),
+        );
+        // Optional: Zurück zum Scan-Screen navigieren, wenn kein Gerät verbunden ist
+        // Navigator.of(context).pop();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _characteristicSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _discoverServicesAndListen(fbp.BluetoothDevice device) async {
+    try {
+      List<fbp.BluetoothService> services = await device.discoverServices();
+      for (fbp.BluetoothService service in services) {
+        if (service.uuid == serviceUuid) {
+          for (fbp.BluetoothCharacteristic characteristic in service.characteristics) {
+            if (characteristic.uuid == characteristicUuid) {
+              if (characteristic.properties.notify || characteristic.properties.indicate) {
+                _targetCharacteristic = characteristic;
+                await _targetCharacteristic!.setNotifyValue(true);
+                _characteristicSubscription = _targetCharacteristic!.onValueReceived.listen((value) {
+                  if (value.isNotEmpty) {
+                    final receivedString = String.fromCharCodes(value);
+                    _handleIncomingString(receivedString);
+                  }
+                });
+                print('Listening to characteristic: ${characteristic.uuid}');
+                return; // Nur diese eine Characteristic abonnieren
+              }
+            }
+          }
+        }
+      }
+      print('Keine Characteristic mit notify/indicate Eigenschaft für Benachrichtigungen gefunden.');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Keine Benachrichtigungs-Characteristic mit den angegebenen UUIDs gefunden.'),
+          backgroundColor: Colors.orange[600],
+        ),
+      );
+    } catch (e) {
+      print("Fehler beim Entdecken der Services oder Einrichten der Benachrichtigungen: $e");
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Fehler bei der Dienstsuche oder Benachrichtigungseinrichtung: ${e.toString().split(':')[0]}'),
+          backgroundColor: Colors.red[600],
+        ),
+      );
+    }
+  }
+
+  void _handleIncomingString(String receivedString) {
+    debugPrint('Received Bluetooth string: $receivedString');
+    final now = DateTime.now();
+    final timeFormatted = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} Uhr";
+
+    // Fügt den empfangenen String zur Liste der Benachrichtigungen für die Anzeige in der UI hinzu
+    setState(() {
+      // Füge die neue Benachrichtigung am Anfang der Liste ein
+      _notifications.insert(0, {
+        'time': 'Heute, $timeFormatted',
+        'message': receivedString,
+      });
+    });
+  }
 
   // Helper method to build a data card with expressive design
   Widget _buildDataCard({required String title, required String value, required IconData icon, required String description}) {
     return Card(
-      // Changed shape for expressive design
       shape: BeveledRectangleBorder(
-        borderRadius: BorderRadius.circular(25.0), // Stärker abgeschrägte Ecken
-        side: BorderSide(color: Colors.lightGreen.shade400, width: 2.0), // Prägnanterer Rand
+        borderRadius: BorderRadius.circular(25.0),
+        side: BorderSide(color: Colors.lightGreen.shade400, width: 2.0),
       ),
-      elevation: 8, // Stärkerer Schatten für mehr Tiefe
-      child: Container( // Using Container for background color and padding inside the shape
+      elevation: 8,
+      child: Container(
         decoration: BoxDecoration(
-          color: Colors.lightGreen[100], // Leichter Grünton als Hintergrund
-          borderRadius: BorderRadius.circular(20.0), // Passend zu Card's BeveledRectangleBorder
+          color: Colors.lightGreen[100],
+          borderRadius: BorderRadius.circular(20.0),
         ),
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -471,15 +563,15 @@ class HomeScreen extends StatelessWidget {
           children: <Widget>[
             Row(
               children: <Widget>[
-                Icon(icon, size: 35, color: Colors.lightGreen[800]), // Größere, kräftigere Icons
+                Icon(icon, size: 35, color: Colors.lightGreen[800]),
                 const SizedBox(width: 15),
-                Expanded( // Use Expanded for the title to prevent overflow in smaller cards
+                Expanded(
                   child: Text(
                     title,
                     style: TextStyle(
-                      fontSize: 22, // Angepasste Schriftgröße
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.lightGreen[900], // Dunkelgrün
+                      color: Colors.lightGreen[900],
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -490,9 +582,9 @@ class HomeScreen extends StatelessWidget {
             Text(
               value,
               style: TextStyle(
-                fontSize: 36, // Prägnanterer Wert
+                fontSize: 36,
                 fontWeight: FontWeight.bold,
-                color: Colors.lightGreen[700], // Kräftigeres Grün
+                color: Colors.lightGreen[700],
               ),
             ),
             const SizedBox(height: 10),
@@ -500,8 +592,8 @@ class HomeScreen extends StatelessWidget {
               child: Text(
                 description,
                 style: TextStyle(
-                  fontSize: 15, // Angepasste Schriftgröße
-                  color: Colors.green[600], // Grüner Text
+                  fontSize: 15,
+                  color: Colors.green[600],
                 ),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
@@ -516,18 +608,18 @@ class HomeScreen extends StatelessWidget {
   // Helper method to build a notification card
   Widget _buildNotificationCard({required String time, required String message}) {
     return Card(
-      elevation: 4, // Etwas mehr Schatten
+      elevation: 4,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18.0), // Stärker abgerundete Ecken
-        side: BorderSide(color: Colors.green.shade200, width: 1.5), // Subtiler grüner Rand
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.green.shade200, width: 1.5),
       ),
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Padding(
-        padding: const EdgeInsets.all(18.0), // Etwas mehr Padding
+        padding: const EdgeInsets.all(18.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Icon(Icons.notifications_active, color: Colors.amber[800], size: 30), // Kräftigeres Bernstein
+            Icon(Icons.notifications_active, color: Colors.amber[800], size: 30),
             const SizedBox(width: 15),
             Expanded(
               child: Column(
@@ -545,8 +637,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     message,
                     style: TextStyle(
-                      fontSize: 17, // Etwas größerer Text
-                      color: Colors.green[800], // Dunkelgrün
+                      fontSize: 17,
                     ),
                   ),
                 ],
@@ -563,33 +654,32 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('SquirrelWatch Daten', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.lightGreen[700], // Grüne AppBar
+        backgroundColor: Colors.lightGreen[700],
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      backgroundColor: Colors.lightGreen[50], // Grüner Hintergrund
-      body: SingleChildScrollView( // Enables scrolling for many cards
+      backgroundColor: Colors.lightGreen[50],
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Align to start for titles
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             // Data Cards Section
             Text(
               'Aktuelle Daten',
               style: TextStyle(
-                fontSize: 26, // Größerer Titel
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
-                color: Colors.lightGreen[900], // Dunkelgrüner Text
+                color: Colors.lightGreen[900],
               ),
             ),
             const SizedBox(height: 15),
-            // Grid for data cards
             GridView.count(
-              shrinkWrap: true, // Important to make GridView work inside SingleChildScrollView
-              physics: const NeverScrollableScrollPhysics(), // Disable GridView's own scrolling
-              crossAxisCount: 2, // 2 columns
-              crossAxisSpacing: 18.0, // Etwas mehr Abstand
-              mainAxisSpacing: 18.0, // Etwas mehr Abstand
-              childAspectRatio: 0.9, // Angepasstes Verhältnis für die Kartenhöhe
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              crossAxisSpacing: 18.0,
+              mainAxisSpacing: 18.0,
+              childAspectRatio: 0.9,
               children: <Widget>[
                 _buildDataCard(
                   title: 'Letzter Besuch',
@@ -617,39 +707,46 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 40), // Spacer before notifications
+            const SizedBox(height: 40),
 
             // Notification History Section
             Text(
               'Letzte Benachrichtigungen',
               style: TextStyle(
-                fontSize: 26, // Größerer Titel
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
-                color: Colors.lightGreen[900], // Dunkelgrüner Text
+                color: Colors.lightGreen[900],
               ),
             ),
             const SizedBox(height: 15),
-            _buildNotificationCard(
-              time: 'Heute, 10:30 Uhr',
-              message: 'Eichhörnchen wurde am Futterautomaten gesichtet!',
-            ),
-            _buildNotificationCard(
-              time: 'Gestern, 16:45 Uhr',
-              message: 'Futterstand ist niedrig (25%).',
-            ),
-            _buildNotificationCard(
-              time: '2 Tage her, 08:00 Uhr',
-              message: 'Neues Eichhörnchen registriert!',
-            ),
-            _buildNotificationCard(
-              time: 'Letzte Woche, 12:10 Uhr',
-              message: 'Bewegung erkannt – Eichhörnchen war kurz da.',
-            ),
-            // Add more notification cards here as needed
+            // Dynamisch hinzugefügte Benachrichtigungen anzeigen
+            if (_notifications.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    'Noch keine Benachrichtigungen erhalten.',
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+            else
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _notifications.length,
+                itemBuilder: (context, index) {
+                  final notification = _notifications[index];
+                  return _buildNotificationCard(
+                    time: notification['time']!,
+                    message: notification['message']!,
+                  );
+                },
+              ),
           ],
         ),
       ),
     );
   }
 }
-

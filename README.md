@@ -31,12 +31,12 @@ Frontend:
 
 Backend:
 1. [Install all backend dependencies](#dependencies)
-2. Compile and upload the included `main.c` to your connected ESP using the Arduino IDE
+2. Compile and upload the included `firmware/Fuetterstation/Fuetterstation.ino` to your connected ESP using the Arduino IDE
 
 ## Structure
 
 | Directory / File | Explanation |
 | --- | --- |
 | frontend | The flutter application, runs on Windows, MacOS, Linux, iOS and Android |
-| firmware | |
+| firmware | The firmware running on the microcontroller|
 | README | This file! |
